@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, unicode_literals, print_function
+
 import os
 import unittest
 from StringIO import StringIO
 from collections import OrderedDict
 
-from hvdaemon.hv import HVFile
+from hvdaemon.hvfile import HVFile
 
 
-class HVTest(unittest.TestCase):
+class HVFileTest(unittest.TestCase):
     def setUp(self):
-        super(HVTest, self).setUp()
+        super(HVFileTest, self).setUp()
         filename = os.path.realpath(__file__)
         self.path = os.path.dirname(filename)
 
