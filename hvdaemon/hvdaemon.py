@@ -8,9 +8,6 @@ import re
 import pyinotify
 import traceback
 
-logger = logging.getLogger()
-del logging
-
 import signal
 import hvsystem
 
@@ -23,7 +20,9 @@ stopping = False
 def main():
     signal.signal(signal.SIGTERM, stop_gracefully)
     signal.signal(signal.SIGINT, stop_gracefully)
-    logger.info('Start watching %s' % HV_DIRECTORY)
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.INFO)
+    logging.warn('Start watching %s' % HV_DIRECTORY)
     process_all_files_from_directory(HV_DIRECTORY, process_file)
     watch(HV_DIRECTORY, process_file)
 
@@ -38,7 +37,10 @@ def is_stopping(notifier_object=None):
 
 
 def watch(directory, process_function):
-    mask = pyinotify.IN_CLOSE_WRITE | pyinotify.IN_MOVED_TO
+    if hvsystem.is_freebsd():
+        mask = pyinotify.IN_CREATE | pyinotify.IN_MODIFY
+    else:
+        mask = pyinotify.IN_CLOSE_WRITE | pyinotify.IN_MOVED_TO
     wm = pyinotify.WatchManager()
     notifier = pyinotify.Notifier(wm, EventHandler(directory, process_function), timeout=1000)
     wm.add_watch(directory, mask)
@@ -71,10 +73,10 @@ def process_file(file_path, event=None, catch_exceptions=False):
     if not re.match(HV_FILEREGEX, os.path.basename(file_path)):
         return
     try:
-        logger.info(file_path)
+        logging.info(file_path)
         hvsystem.process_file(file_path)
     except:
-        logger.error((repr(file_path), event, repr(traceback.format_exc())))
+        logging.error((repr(file_path), event, repr(traceback.format_exc())))
         if not catch_exceptions:
             raise
 
