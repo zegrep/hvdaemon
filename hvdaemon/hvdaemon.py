@@ -70,7 +70,7 @@ def process_all_files_from_directory(directory, process_function):
 def process_file(file_path, event=None, catch_exceptions=False):
     #wait for writing to complete_
     if hvsystem.is_freebsd():
-        time.spleep(1)
+        time.sleep(1)
     if not os.path.exists(file_path):
         return
     if not re.match(HV_FILEREGEX, os.path.basename(file_path)):
