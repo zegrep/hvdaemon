@@ -69,7 +69,7 @@ def process_all_files_from_directory(directory, process_function):
 
 def process_file(file_path, event=None, catch_exceptions=False):
     #wait for writing to complete_
-    if hvsystem.is_freebsd():
+    if hvsystem.is_freebsd() and (not catch_exceptions):
         time.sleep(1)
     if not os.path.exists(file_path):
         return
